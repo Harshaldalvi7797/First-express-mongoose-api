@@ -9,4 +9,4 @@ mongoose
     .then(() => console.log(`connected successfully`))
     .catch((error) => console.log(`something went wrong ${error.message}`));
 
-app.listen(port, () => console.log(`connected to port`))
+app.listen(port, () => console.log(`connected to port`));
