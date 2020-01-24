@@ -2,6 +2,7 @@ let express = require("express");
 
 let app = express();
 let mongoose = require("mongoose");
+let user = require("./routes/userRoutes")
 let port = process.env.port || 4800;
 app.use(express.json());
 mongoose
@@ -10,3 +11,4 @@ mongoose
     .catch((error) => console.log(`something went wrong ${error.message}`));
 
 app.listen(port, () => console.log(`connected to port`));
+app.use("/api", user);
