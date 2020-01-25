@@ -24,10 +24,10 @@ router.get("fetchuser/:id", async (req, res) => {
 //insert data
 router.post("/createuser", async (req, res) => {
 
-    let user = User.findOne({ "UserLogin.EmailId": req.body.UserLogin.EmailId });
-    if (user) {
-        return res.status(403).send({ message: "user exist" })
-    }
+    // let user = User.findOne({ "UserLogin.EmailId": req.body.UserLogin.EmailId });
+    // if (user) {
+    //     return res.status(403).send({ message: "user exist" })
+    // }
     let { error } = validationError(req.body);
     if (error) {
         return res.send(error.details[0].message);
@@ -48,16 +48,21 @@ router.post("/createuser", async (req, res) => {
 
 
 //update data
+
 router.put("/updateuser/:id", async (req, res) => {
     let user = await User.findById(req.params.id);
     if (!user) { return res.status(404).send({ message: "Invalid id" }) }
     res.send({ data: user });
-
+    let { error } = validationError(req.body);
+    if (error) {
+        return res.send(error.details[0].message);
+    }
     user.FirstName = req.body.FirstName;
     user.LastName = req.body.LastName;
     user.Mobileno = req.body.Mobileno;
-    user.Login.EmailId : req.body.UserLogin.EmailID;
-    user.Login.password : req.body.UserLogin.password;
+    user.UserLogin.EmailId = req.body.UserLogin.EmailID;
+    user.UserLogin.password = req.body.UserLogin.password;
+
     await user.save();
     res.send({ message: "data updates" })
 
@@ -74,9 +79,9 @@ router.put("/updateuser/:id", async (req, res) => {
 // router.delete()
 function validationError(error) {
     let schema = joi.object({
-        Firstname: joi.string().min(3).max(25).required(),
-        Lastname: joi.string().min(3).max(25).required(),
-        Mobileno: joi.string().min(3).max(250).required(),
+        FirstName: joi.string().min(3).max(25).required(),
+        LastName: joi.string().min(3).max(25).required(),
+        Mobileno: joi.string().min(10).max(250).required(),
         UserLogin: {
             EmailId: joi.string().required().email(),
             password: joi.string().required()

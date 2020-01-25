@@ -4,7 +4,7 @@ let userSchema = new mongoose.Schema({
 
     FirstName: { type: String, min: 3, max: 250, alphanum: true, trim: true },
     LastName: { type: String, min: 4, max: 250, alphanum: true, trim: true },
-    mobileno: { type: Number, required: true },
+    Mobileno: { type: Number, required: true },
     UserLogin: {
         EmailId: { type: String, required: true, unique: true },
         password: { type: String, required: true }
