@@ -15,7 +15,7 @@ router.get("/fetchuser", async (req, res) => {
 
 
 //Fetch data by Id
-router.get("fetchuser/:id", async (req, res) => {
+router.get("/fetchuser/:id", async (req, res) => {
     let user = await User.findById(req.params.id);
     if (!user) { return res.status(404).send({ message: "Invalid id" }) }
     res.send({ data: user });
@@ -24,10 +24,10 @@ router.get("fetchuser/:id", async (req, res) => {
 //insert data
 router.post("/createuser", async (req, res) => {
 
-    // let user = User.findOne({ "UserLogin.EmailId": req.body.UserLogin.EmailId });
-    // if (user) {
-    //     return res.status(403).send({ message: "user exist" })
-    // }
+    let user = User.findOne({ "UserLogin.EmailId": req.body.UserLogin.EmailId });
+    if (!user) {
+        return res.status(403).send({ message: "user exist" })
+    }
     let { error } = validationError(req.body);
     if (error) {
         return res.send(error.details[0].message);
@@ -52,19 +52,20 @@ router.post("/createuser", async (req, res) => {
 router.put("/updateuser/:id", async (req, res) => {
     let user = await User.findById(req.params.id);
     if (!user) { return res.status(404).send({ message: "Invalid id" }) }
-    res.send({ data: user });
+    // res.send({ data: user });
+
     let { error } = validationError(req.body);
     if (error) {
         return res.send(error.details[0].message);
     }
-    user.FirstName = req.body.FirstName;
-    user.LastName = req.body.LastName;
-    user.Mobileno = req.body.Mobileno;
-    user.UserLogin.EmailId = req.body.UserLogin.EmailID;
-    user.UserLogin.password = req.body.UserLogin.password;
+    user.FirstName = req.body.FirstName,
+        user.LastName = req.body.LastName,
+        user.Mobileno = req.body.Mobileno,
+        user.UserLogin.EmailId = req.body.UserLogin.EmailID,
+        user.UserLogin.password = req.body.UserLogin.password
 
-    await user.save();
-    res.send({ message: "data updates" })
+    let data = await user.save();
+    res.send({ message: "data updates", d: data })
 
 
 
@@ -77,6 +78,7 @@ router.put("/updateuser/:id", async (req, res) => {
 //remove data
 
 // router.delete()
+
 function validationError(error) {
     let schema = joi.object({
         FirstName: joi.string().min(3).max(25).required(),
