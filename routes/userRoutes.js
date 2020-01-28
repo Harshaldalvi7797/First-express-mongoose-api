@@ -58,24 +58,29 @@ router.put("/updateuser/:id", async (req, res) => {
     if (error) {
         return res.send(error.details[0].message);
     }
+
     user.FirstName = req.body.FirstName,
         user.LastName = req.body.LastName,
         user.Mobileno = req.body.Mobileno,
-        user.UserLogin.EmailId = req.body.UserLogin.EmailID,
+        user.UserLogin.EmailId = req.body.UserLogin.EmailId,
         user.UserLogin.password = req.body.UserLogin.password
 
     let data = await user.save();
     res.send({ message: "data updates", d: data })
 
-
-
-
-
-
 });
 
 
+
 //remove data
+
+router.delete("/removeUser/:id", async (req, res) => {
+    let data = await User.findByIdAndRemove(req.params.id);
+    if (!data) {
+        res.status(404).send({ message: "Invalid User Id" });
+    }
+    res.send({ message: "Thank You! Come Back Again:)" });
+})
 
 // router.delete()
 
