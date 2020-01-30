@@ -1,5 +1,6 @@
 let express = require("express");
-let router = express.Router();  //
+let router = express.Router();
+let bcrypt = require("bcrypt");
 
 let joi = require("@hapi/joi");
 let User = require("../dbModel/user");
@@ -38,10 +39,13 @@ router.post("/createuser", async (req, res) => {
         LastName: req.body.LastName,
         Mobileno: req.body.Mobileno,
         UserLogin: req.body.UserLogin
-
-
-
     })
+
+    let salt = await bcrypt.genSalt(10);
+    newuser.UserLogin.password = await bcrypt.hash(newuser.UserLogin.password, salt);
+
+
+
     let data = await newuser.save();
     res.send({ message: "thanks", d: data })
 })
