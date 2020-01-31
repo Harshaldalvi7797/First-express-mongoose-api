@@ -1,4 +1,5 @@
 let mongoose = require("mongoose");
+let joi = require("@hapi/joi");
 
 let userSchema = new mongoose.Schema({
 
@@ -16,4 +17,20 @@ let userSchema = new mongoose.Schema({
 })
 let userModel = mongoose.model("users", userSchema);
 
-module.exports = userModel;
+
+function validationError(error) {
+    let schema = joi.object({
+        FirstName: joi.string().min(3).max(25).required(),
+        LastName: joi.string().min(3).max(25).required(),
+        Mobileno: joi.string().min(10).max(250).required(),
+        UserLogin: {
+            EmailId: joi.string().required().email(),
+            password: joi.string().required()
+        }
+
+
+    })
+    return schema.validate(error);
+}
+
+module.exports = { userModel, validationError };

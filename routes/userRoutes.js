@@ -2,14 +2,14 @@ let express = require("express");
 let router = express.Router();
 let bcrypt = require("bcrypt");
 
-let joi = require("@hapi/joi");
+// let joi = require("@hapi/joi");
 let User = require("../dbModel/user");
 
 
 //Fetch data
 
 router.get("/fetchuser", async (req, res) => {
-    let data = await User.find();
+    let data = await User.userModel.find();
     res.send({ d: data });
 })
 
@@ -17,7 +17,7 @@ router.get("/fetchuser", async (req, res) => {
 
 //Fetch data by Id
 router.get("/fetchuser/:id", async (req, res) => {
-    let user = await User.findById(req.params.id);
+    let user = await User.userModel.findById(req.params.id);
     if (!user) { return res.status(404).send({ message: "Invalid id" }) }
     res.send({ data: user });
 })
@@ -25,15 +25,16 @@ router.get("/fetchuser/:id", async (req, res) => {
 //insert data
 router.post("/createuser", async (req, res) => {
 
-    let user = User.findOne({ "UserLogin.EmailId": req.body.UserLogin.EmailId });
+    let user = User.userModel.findOne({ "UserLogin.EmailId": req.body.UserLogin.EmailId });
     if (!user) {
         return res.status(403).send({ message: "user exist" })
     }
-    let { error } = validationError(req.body);
+    let { error } = User.validationError(req.body);
     if (error) {
         return res.send(error.details[0].message);
     }
 
+    // @ts-ignore
     let newuser = new User({
         FirstName: req.body.FirstName,
         LastName: req.body.LastName,
@@ -42,6 +43,7 @@ router.post("/createuser", async (req, res) => {
     })
 
     let salt = await bcrypt.genSalt(10);
+    // @ts-ignore
     newuser.UserLogin.password = await bcrypt.hash(newuser.UserLogin.password, salt);
 
 
@@ -54,19 +56,23 @@ router.post("/createuser", async (req, res) => {
 //update data
 
 router.put("/updateuser/:id", async (req, res) => {
-    let user = await User.findById(req.params.id);
+    let user = await User.userModel.findById(req.params.id);
     if (!user) { return res.status(404).send({ message: "Invalid id" }) }
     // res.send({ data: user });
 
-    let { error } = validationError(req.body);
+    let { error } = User.validationError(req.body);
     if (error) {
         return res.send(error.details[0].message);
     }
 
     user.FirstName = req.body.FirstName,
+        // @ts-ignore
         user.LastName = req.body.LastName,
+        // @ts-ignore
         user.Mobileno = req.body.Mobileno,
+        // @ts-ignore
         user.UserLogin.EmailId = req.body.UserLogin.EmailId,
+        // @ts-ignore
         user.UserLogin.password = req.body.UserLogin.password
 
     let data = await user.save();
@@ -79,7 +85,7 @@ router.put("/updateuser/:id", async (req, res) => {
 //remove data
 
 router.delete("/removeUser/:id", async (req, res) => {
-    let data = await User.findByIdAndRemove(req.params.id);
+    let data = await User.userModel.findByIdAndRemove(req.params.id);
     if (!data) {
         res.status(404).send({ message: "Invalid User Id" });
     }
@@ -88,18 +94,18 @@ router.delete("/removeUser/:id", async (req, res) => {
 
 // router.delete()
 
-function validationError(error) {
-    let schema = joi.object({
-        FirstName: joi.string().min(3).max(25).required(),
-        LastName: joi.string().min(3).max(25).required(),
-        Mobileno: joi.string().min(10).max(250).required(),
-        UserLogin: {
-            EmailId: joi.string().required().email(),
-            password: joi.string().required()
-        }
+// function validationError(error) {
+//     let schema = joi.object({
+//         FirstName: joi.string().min(3).max(25).required(),
+//         LastName: joi.string().min(3).max(25).required(),
+//         Mobileno: joi.string().min(10).max(250).required(),
+//         UserLogin: {
+//             EmailId: joi.string().required().email(),
+//             password: joi.string().required()
+//         }
 
 
-    })
-    return schema.validate(error);
-}
+//     })
+//     return schema.validate(error);
+// }
 module.exports = router;
