@@ -1,5 +1,7 @@
 let mongoose = require("mongoose");
 let joi = require("@hapi/joi");
+let jwt = require("jsonwebtoken");
+let config = require("config");
 
 let userSchema = new mongoose.Schema({
 
@@ -12,9 +14,18 @@ let userSchema = new mongoose.Schema({
 
         // EmailId: { type: String, required: true, unique: true },
         // password: { type: String, required: true }
-    }
+    },
+    isAdmin:{ type:Boolean}
 
 })
+
+userSchema.methods.UserToken = function()
+{
+ let token = jwt.sign({ _id: this._id, isAdmin:this.isAdmin } , config.get("apitoken"));
+ return token;
+}
+
+
 let userModel = mongoose.model("users", userSchema);
 
 

@@ -2,13 +2,14 @@ let express = require("express");
 let router = express.Router();
 let bcrypt = require("bcrypt");
 
-// let joi = require("@hapi/joi");
-let User = require("../dbModel/user");
-
+ let joi = require("@hapi/joi");
+ let User = require("../dbModel/user");
+let auth = require("../middleware/user.auth");
+let admin = require("../middleware/admin");
 
 //Fetch data
 
-router.get("/fetchuser", async (req, res) => {
+router.get("/fetchuser", auth, async (req, res) => {
     let data = await User.userModel.find();
     res.send({ d: data });
 })
@@ -35,7 +36,7 @@ router.post("/createuser", async (req, res) => {
     }
 
     // @ts-ignore
-    let newuser = new User({
+    let newuser = new User.userModel({
         FirstName: req.body.FirstName,
         LastName: req.body.LastName,
         Mobileno: req.body.Mobileno,
@@ -65,6 +66,7 @@ router.put("/updateuser/:id", async (req, res) => {
         return res.send(error.details[0].message);
     }
 
+    // @ts-ignore
     user.FirstName = req.body.FirstName,
         // @ts-ignore
         user.LastName = req.body.LastName,
@@ -84,7 +86,7 @@ router.put("/updateuser/:id", async (req, res) => {
 
 //remove data
 
-router.delete("/removeUser/:id", async (req, res) => {
+router.delete("/removeUser/:id", [auth,admin], async (req, res) => {
     let data = await User.userModel.findByIdAndRemove(req.params.id);
     if (!data) {
         res.status(404).send({ message: "Invalid User Id" });

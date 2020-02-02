@@ -1,9 +1,17 @@
 let express = require("express");
 let router = express.Router();
+let config = require("config");
 let User = require("../../dbModel/user");
 let joi = require("@hapi/joi");
 let bcrypt = require("bcrypt");
 let jwt = require("jsonwebtoken");
+let auth = require("../../middleware/user.auth");
+router.get("/me" , auth , async (req,res) =>
+{
+    let data = await User.userModel.findById(req.user._id).select("-UserLogin.password -isAdmin");
+    res.send(data);
+})
+
 
 router.post("/auth", async (req, res) => {
 
@@ -19,8 +27,14 @@ router.post("/auth", async (req, res) => {
     let password = await bcrypt.compare(req.body.UserLogin.password, user.UserLogin.password);
     if (!password) { return res.status(403).send({ message: "invalid password" }) }
 
-    let token = jwt.sign({ _id: user._id }, "jwtprivatekey");
-    res.send({ message: " login succesfully", token: token })
+    // let token = jwt.sign({ _id: user._id }, "jwtprivatekey");
+    // res.send({ message: " login succesfully", token: token })
+
+    //  let token = jwt.sign({ _id: user._id } , config.get("apitoken"));
+     // @ts-ignore
+     let token = user.UserToken();
+
+    res.header("x-auth-token" , token).send({ message: " login succesfully", token: token })
 
 })
 
