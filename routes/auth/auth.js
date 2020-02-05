@@ -8,6 +8,7 @@ let jwt = require("jsonwebtoken");
 let auth = require("../../middleware/user.auth");
 router.get("/me" , auth , async (req,res) =>
 {
+    // @ts-ignore
     let data = await User.userModel.findById(req.user._id).select("-UserLogin.password -isAdmin");
     res.send(data);
 })

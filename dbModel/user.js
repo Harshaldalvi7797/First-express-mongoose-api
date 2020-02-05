@@ -15,7 +15,11 @@ let userSchema = new mongoose.Schema({
         // EmailId: { type: String, required: true, unique: true },
         // password: { type: String, required: true }
     },
+    resetpasswordtoken:{type:String},
+    resetpasswordexpire:{type:Date},
     isAdmin:{ type:Boolean}
+ 
+
 
 })
 
