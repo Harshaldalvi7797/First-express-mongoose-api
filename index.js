@@ -10,11 +10,16 @@ let auth = require("./routes/auth/auth");
 let mailer = require("./routes/mailer");
 let forgetepassword = require("./routes/forget.password");
 let pagination = require("./routes/pagination");
+let file = require("./routes/fileupload");
+
+
 
 
 
 let port = process.env.port || 4600;
-app.use(express.json())
+app.use(express.json());
+//in build middleware
+app.use("/uploads" , express.static("uploads"));
 
 if(!config.get("apitoken"))
 {
@@ -34,4 +39,5 @@ app.use("/api", user);
 app.use("/api/userlogin", auth);
 app.use("/api" , mailer);
 app.use("/api", forgetepassword);
-app.use("/api", pagination)
+app.use("/api", pagination);
+app.use("/fileuplaod", file);

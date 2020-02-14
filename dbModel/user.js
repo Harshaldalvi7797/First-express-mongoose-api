@@ -3,6 +3,7 @@ let joi = require("@hapi/joi");
 let jwt = require("jsonwebtoken");
 let config = require("config");
 
+
 let userSchema = new mongoose.Schema({
 
     FirstName: { type: String, min: 3, max: 250, alphanum: true, trim: true },
@@ -31,6 +32,8 @@ userSchema.methods.UserToken = function()
 
 
 let userModel = mongoose.model("users", userSchema);
+
+
 
 
 function validationError(error) {
