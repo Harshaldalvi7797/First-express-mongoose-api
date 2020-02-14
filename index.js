@@ -9,6 +9,7 @@ let user = require("./routes/userRoutes")
 let auth = require("./routes/auth/auth");
 let mailer = require("./routes/mailer");
 let forgetepassword = require("./routes/forget.password");
+let pagination = require("./routes/pagination");
 
 
 
@@ -33,3 +34,4 @@ app.use("/api", user);
 app.use("/api/userlogin", auth);
 app.use("/api" , mailer);
 app.use("/api", forgetepassword);
+app.use("/api", pagination)

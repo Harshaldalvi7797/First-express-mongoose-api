@@ -37,7 +37,7 @@ function validationError(error) {
     let schema = joi.object({
         FirstName: joi.string().min(3).max(25).required(),
         LastName: joi.string().min(3).max(25).required(),
-        Mobileno: joi.string().min(10).max(250).required(),
+        Mobileno: joi.string().min(10).max(250),
         UserLogin: {
             EmailId: joi.string().required().email(),
             password: joi.string().required()
